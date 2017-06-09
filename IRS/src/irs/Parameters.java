@@ -83,7 +83,7 @@ public class Parameters extends Data{
         try{           
             Connection conn = connect();//connect() from Data.java        
             PreparedStatement pst = conn.prepareStatement("INSERT INTO parameters "
-                    + "(patientID, min, max, k, p) VALUES (?, ?, ?, ?, ?)");
+                    + "(patientID, minrate, maxrate, k, p) VALUES (?, ?, ?, ?, ?)");
             pst.setString(1, parameters.getID()); 
             pst.setString(2, String.valueOf(parameters.getMIN()) );
             pst.setString(3, String.valueOf(parameters.getMAX()) );

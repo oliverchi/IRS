@@ -8,7 +8,7 @@ package irs;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
+//import java.sql.Statement;
 
 /**
  *
@@ -27,15 +27,17 @@ public class Data {
     //build connection to database
     public Connection connect(){
         Connection connect = null;
+        
         try{
             Class.forName(DRIVER).newInstance();
 		System.out.println("Loaded the embedded driver.");
         } catch(ClassNotFoundException | IllegalAccessException 
                 | InstantiationException err){
             System.err.println("Unable to load the embedded driver.");
-			err.printStackTrace(System.err);			
+			err.printStackTrace(System.err);
+			//System.exit(0);
         }
-        
+                
         try {
             connect = DriverManager.getConnection(PROTOCOL + DBNAME );
             
@@ -61,22 +63,22 @@ public class Data {
         return true;
     }
     
-    ///////////////////////////////////////////////////////////////////////////
-    
+    /*************************************************************************
+     *    codes for create DB and tables and insert test data                *
+     *  from OLD PROJECT HeartRateMonitor (Git: oliverchi.heartratemonitor ) *
+     *               connectDB()                                             *
+     *               closeConnection()                                       *
+     *               createDB()                                              *
+     *               executeSQL()                                            *
+     *               createTables()                                          *
+    **************************************************************************/
     /**
      * Method connectDB()
      * @return boolean value if it is successful to connect database
      */
+    /*
     public boolean connectDB(){
-        try{
-            Class.forName(DRIVER).newInstance();
-		System.out.println("Loaded the embedded driver.");
-        } catch(ClassNotFoundException | IllegalAccessException 
-                | InstantiationException err){
-            System.err.println("Unable to load the embedded driver.");
-			err.printStackTrace(System.err);			
-        }
-        
+                
         try {
             this.conn = DriverManager.getConnection(PROTOCOL + DBNAME );
             
@@ -87,13 +89,15 @@ public class Data {
            return false;
         }
         return true;        
-    } 
+    }
+    */
           
     
     /**
      * Method closeConnection()
      * This method has to be called after all other methods are completed
      */
+    /*
     public void closeConnection(){
         try {
             this.conn.close();   
@@ -109,6 +113,7 @@ public class Data {
      * @return boolean value if it is successful to create database
      * used by createTables() to initial data
      */
+    /*
     public boolean createDB(){
         try{
             Class.forName(DRIVER).newInstance();
@@ -131,15 +136,17 @@ public class Data {
         }
         return true;        
     }
+    */
     
     /**
      * Method executeSQL()
      * @param sql: SQL statement for execution
      * @return boolean value if it is successful to execute SQL statement
      */
+    /*
     public boolean executeSQL(String sql){
         try {
-            Statement s = this.conn.createStatement();
+            Statement s = conn.createStatement();
             s.execute(sql);   
             
         } catch(SQLException err){
@@ -150,11 +157,14 @@ public class Data {
         }
         return true; 
     }
+    */
     
     /**
      * Method createTables()
      * initial the tables in the IRS database
+     * @return boolean
      */
+    /*
     public boolean createTables(){
            
         //create database
@@ -166,24 +176,24 @@ public class Data {
         }
         
         
-        //create table for user and initialise test data
+        //create table for all users and initialise test data
         if ( connectDB() ) {
-            System.out.println("connnect database successful(user table)");
-            if ( executeSQL ( "CREATE TABLE user ("
+            System.out.println("connnect database successful(login table)");
+            if ( executeSQL ( "CREATE TABLE login ("
                     + " username VARCHAR(40) NOT NULL , "
                     + "password VARCHAR(40) NOT NULL, "
                     + "staffid VARCHAR(40) NOT NULL, "
                     + "position VARCHAR(40) NOT NULL, "
                     + "PRIMARY KEY (username) )" ) ) {
-                System.out.println("user table create successfully.");
+                System.out.println("login table create successfully.");
             } else {
-                System.out.println("unable to create user table.");
+                System.out.println("unable to create login table.");
                 return false;                
             }
             //give test data for user
-            executeSQL("INSERT INTO user (username, password, staffid, position) VALUES "
+            executeSQL("INSERT INTO login (username, password, staffid, position) VALUES "
                     + "('Betty123', 'b1234567', 'NM1001', 'NM')");
-            executeSQL("INSERT INTO user (username, password, staffid, position) VALUES "
+            executeSQL("INSERT INTO login (username, password, staffid, position) VALUES "
                     + "('Emma123', 'e1234567', 'RN1001', 'RN')");
             closeConnection();
         } else {
@@ -328,8 +338,8 @@ public class Data {
             System.out.println("connnect database successful(parameters table)");
             if ( executeSQL ( "CREATE TABLE parameters ("
                     + "patientID VARCHAR(5) NOT NULL , "
-                    + "min INTEGER NOT NULL , "
-                    + "max INTEGER NOT NULL, "
+                    + "minrate INTEGER NOT NULL , "
+                    + "maxrate INTEGER NOT NULL, "
                     + "k INTEGER NOT NULL, "
                     + "p INTEGER NOT NULL, "
                     + "PRIMARY KEY (patientID) )" ) ) {
@@ -339,13 +349,13 @@ public class Data {
                 return false;                
             }
             //give test data for parameters
-            executeSQL("INSERT INTO parameters (patientID, min, max, k, p) VALUES "
+            executeSQL("INSERT INTO parameters (patientID, minrate, maxrate, k, p) VALUES "
                     + "('00000', 60, 100, 7, 100)");
-            executeSQL("INSERT INTO parameters (patientID, min, max, k, p) VALUES "
+            executeSQL("INSERT INTO parameters (patientID, minrate, maxrate, k, p) VALUES "
                     + "('10002', 60, 100, 7, 100)");
-            executeSQL("INSERT INTO parameters (patientID, min, max, k, p) VALUES "
+            executeSQL("INSERT INTO parameters (patientID, minrate, maxrate, k, p) VALUES "
                     + "('10003', 60, 100, 7, 100)");
-            executeSQL("INSERT INTO parameters (patientID, min, max, k, p) VALUES "
+            executeSQL("INSERT INTO parameters (patientID, minrate, maxrate, k, p) VALUES "
                     + "('10004', 60, 100, 7, 100)");
             closeConnection();
         } else {
@@ -355,5 +365,6 @@ public class Data {
         
         return true;
     }
+    */
     
 }

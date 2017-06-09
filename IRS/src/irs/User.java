@@ -111,10 +111,10 @@ public class User extends Data{
     //check if user name is database and password is matched;
     //if return true, means input matches the correct information.
     public boolean loginCheck(String name, String pwd){
-        //connect to database, search if name occurs in table user
+        //connect to database, search if name occurs in table login
         try{           
             Connection conn = connect();//connect() from Data.java
-            PreparedStatement pst = conn.prepareStatement("Select * from user"
+            PreparedStatement pst = conn.prepareStatement("Select * from login"
                     + " where username=? and password=?");
             pst.setString(1, name); 
             pst.setString(2, pwd);
@@ -129,11 +129,11 @@ public class User extends Data{
 
     //check if user name is database;
     public boolean userCheck(String name){
-        //connect to database, search if name occurs in table user
+        //connect to database, search if name occurs in table login
         try{           
             Connection conn = connect();//connect() from Data.java
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM user "
+            ResultSet rs = stmt.executeQuery("SELECT * FROM login "
                     + "WHERE username = " + name);  
             disconnect(conn);//close the connection to DB
             return rs.next();//true means that username exists.
@@ -146,11 +146,11 @@ public class User extends Data{
     //A staff only can have one user account
     //check if staff ID is database;
     public boolean staffIDCheck(String id){
-        //connect to database, search if name occurs in table user
+        //connect to database, search if name occurs in table login
         try{           
             Connection conn = connect();//connect() from Data.java
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM user "
+            ResultSet rs = stmt.executeQuery("SELECT * FROM login "
                     + "WHERE staffid = " + id);  
             disconnect(conn);//close the connection to DB
             return rs.next();//true means that staffID exists.
@@ -167,10 +167,10 @@ public class User extends Data{
         
         if (userCheck(name)|| staffIDCheck(staffID)) return false;//user account exist
 
-        //connect to database, search if name occurs in table user
+        //connect to database, search if name occurs in table login
         try{           
             Connection conn = connect();//connect() from Data.java
-            PreparedStatement pst = conn.prepareStatement("INSERT INTO user "
+            PreparedStatement pst = conn.prepareStatement("INSERT INTO login "
                     + "(username, password, staffid, position) VALUES "
                     + "(?, ?, ?, ?)");
             pst.setString(1, name); 

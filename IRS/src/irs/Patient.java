@@ -151,10 +151,10 @@ public class Patient extends Data{
     }
     
        
-    //A staff only can have one user account
-    //check if staff ID is database;
+    
+    //check if patient ID is database;
     public boolean patientIDCheck(String pid){
-        //connect to database, search if name occurs in table user
+        //connect to database, search if name occurs in table patient
         try{           
             Connection conn = connect();//connect() from Data.java
             Statement stmt = conn.createStatement();
@@ -169,7 +169,7 @@ public class Patient extends Data{
     }
     
     //before store data, should check duplicated data first;
-    //store new user information into DB;
+    //store new patient information into DB;
     //return boolean value indicates the action successful or not
     public boolean insertNewPatient(String pid, String fn, String ln, 
             String gender,String birth, String phone, String street, 
