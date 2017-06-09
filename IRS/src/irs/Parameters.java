@@ -63,13 +63,14 @@ public class Parameters extends Data{
                     + "WHERE patientID = ?");
             pst.setString(1, pid);             
             ResultSet rs = pst.executeQuery();
-            disconnect(conn);//close the connection to DB
+            
             while (rs.next()) {
                 parameters.min.set(rs.getInt("min"));  
                 parameters.max.set(rs.getInt("max"));  
                 parameters.k.set(rs.getInt("k"));  
                 parameters.p.set(rs.getInt("p")); 
             }
+            disconnect(conn);//close the connection to DB
             return parameters;
         } catch(SQLException e){
             System.out.println("SQLException happens in getParameters() of class Parameters");  

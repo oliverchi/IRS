@@ -7,8 +7,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="640.0" prefWidth="800.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1" fx:controller="irs.HeartRatePage">
+<AnchorPane id="AnchorPane" prefHeight="640.0" prefWidth="800.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="irs.HeartRatePage">
     <stylesheets>
-        <URL value="@/irs/css/heartratepage.css"/>
+        <URL value="@/irs/css/heartratepage.css" />
     </stylesheets>
+   <children>
+      <Button fx:id="btn" layoutX="297.0" layoutY="166.0" mnemonicParsing="false" onAction="#btnOnAction" text="Button" />
+   </children>
 </AnchorPane>

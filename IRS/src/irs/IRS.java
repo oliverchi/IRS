@@ -32,6 +32,13 @@ import javafx.stage.Stage;
  */
 public class IRS extends Application {
     
+    //initial user object and give instance of class to pass user value to next
+    private final static User userAccount = new User();    
+    private final static IRS instanceOfIRS = new IRS();
+    public static IRS getInstance() {
+        return instanceOfIRS;
+    }
+    
     @Override
     public void start(Stage primaryStage) {
         //window Title
@@ -71,23 +78,36 @@ public class IRS extends Application {
         GridPane.setColumnSpan(actiontarget, 2);
         GridPane.setHalignment(actiontarget, HPos.RIGHT);
         actiontarget.setId("actiontarget");
-            
+                   
+        
         //Login Button Action Listener
         //switch scene to HeartRatePage
         btn.setOnAction((ActionEvent e) -> {
-            try {
-                Parent loginPage = FXMLLoader.load(getClass()
-                        .getResource("HeartRatePage.fxml"));                
-                Scene heartRateScene = new Scene(loginPage);                
-                Stage loginStage = (Stage) ((Node) e.getSource())
-                        .getScene().getWindow();
-                loginStage.setScene(heartRateScene);
-                loginStage.setX(0);
-                loginStage.setY(0);
-                loginStage.show();
-            } catch (IOException ex) {
-                Logger.getLogger(IRS.class.getName()).log(Level.SEVERE, null, ex);
+            if ( userAccount.loginCheck(userTextField.getText(),
+                    pwBox.getText()) ) {//check username and password
+                try {
+                    //put values into user object
+                    userAccount.setName(userTextField.getText());
+                    userAccount.setKey(pwBox.getText());
+                    
+                    //switch scene to HeartRatePage
+                    Parent loginPage = FXMLLoader.load(getClass()
+                            .getResource("HeartRatePage.fxml"));                
+                    Scene heartRateScene = new Scene(loginPage);                
+                    Stage loginStage = (Stage) ((Node) e.getSource())
+                            .getScene().getWindow();
+                    loginStage.setScene(heartRateScene);
+                    loginStage.setX(0);//set scene position as (0,0)
+                    loginStage.setY(0);
+                    loginStage.show();
+                } catch (IOException ex) {
+                    Logger.getLogger(IRS.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                //username and password dismatched so sends error message
+                actiontarget.setText("Please recheck your user name and password.");
             }
+            
         });
         
         //New User Button Action Listener
@@ -128,4 +148,8 @@ public class IRS extends Application {
         launch(args);
     }
     
+    //retrive user account
+    public User getUser(){
+        return this.userAccount;
+    }
 }

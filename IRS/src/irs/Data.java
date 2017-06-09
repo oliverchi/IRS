@@ -40,6 +40,7 @@ public class Data {
                 
         try {
             connect = DriverManager.getConnection(PROTOCOL + DBNAME );
+            System.out.println("connect DB successfully");
             
         } catch(SQLException err){
            System.err.println("database connection error.");
@@ -53,7 +54,8 @@ public class Data {
     //disconnect to database
     public boolean disconnect(Connection connect){
         try {
-            connect.close();   
+            connect.close();
+            System.out.println("disconnect successfully");
             
         } catch(SQLException err){
            System.err.println("disconnect database fails.");

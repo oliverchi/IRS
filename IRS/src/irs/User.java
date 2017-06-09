@@ -115,15 +115,21 @@ public class User extends Data{
         try{           
             Connection conn = connect();//connect() from Data.java
             PreparedStatement pst = conn.prepareStatement("Select * from login"
-                    + " where username=? and password=?");
+                    + " where username = ? and password = ?");
             pst.setString(1, name); 
             pst.setString(2, pwd);
-            ResultSet rs = pst.executeQuery();  
+            ResultSet rs = pst.executeQuery();           
+            
+            if(rs.next()){
+                disconnect(conn);//close the connection to DB
+                return true;//true means matched and have data from above retrivement
+            }
             disconnect(conn);//close the connection to DB
-            return rs.next(); //true means matched and have data from above retrivement
+            return false; 
           
         } catch(SQLException e){
-              return false;//error
+            System.out.println(e.getMessage()); 
+            return false;//error              
         }        
     }  
 
@@ -135,8 +141,12 @@ public class User extends Data{
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM login "
                     + "WHERE username = " + name);  
+            if(rs.next()){
+                disconnect(conn);//close the connection to DB
+                return true;//true means matched and have data from above retrivement
+            }
             disconnect(conn);//close the connection to DB
-            return rs.next();//true means that username exists.
+            return false; 
             
         } catch(SQLException e){
               return false;//error
@@ -152,8 +162,12 @@ public class User extends Data{
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM login "
                     + "WHERE staffid = " + id);  
+            if(rs.next()){
+                disconnect(conn);//close the connection to DB
+                return true;//true means matched and have data from above retrivement
+            }
             disconnect(conn);//close the connection to DB
-            return rs.next();//true means that staffID exists.
+            return false; 
             
         } catch(SQLException e){
               return false;//error

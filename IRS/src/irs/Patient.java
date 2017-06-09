@@ -138,11 +138,12 @@ public class Patient extends Data{
             Connection conn = connect();//connect() from Data.java
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT MAX(id) AS id FROM patient");  
-            disconnect(conn);//close the connection to DB
+            
             if ( rs.next() ){
                 nextid = rs.getString("id");
                 nextid = Integer.toString(Integer.parseInt(nextid, 10) + 1);                
             }
+            disconnect(conn);//close the connection to DB
             return nextid;
             
         } catch(SQLException e){
@@ -160,8 +161,12 @@ public class Patient extends Data{
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM patient "
                     + "WHERE id = " + pid);  
+            if(rs.next()){
+                disconnect(conn);//close the connection to DB
+                return true;//true means matched and have data from above retrivement
+            }
             disconnect(conn);//close the connection to DB
-            return rs.next();//true means that staffID exists.
+            return false; 
             
         } catch(SQLException e){
               return false;//error

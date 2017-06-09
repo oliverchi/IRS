@@ -65,12 +65,14 @@ public class Result extends Data{
             pst.setString(1, pid); 
             pst.setString(2, date);            
             ResultSet rs = pst.executeQuery();
-            disconnect(conn);//close the connection to DB
+            
             while (rs.next()) {
                 result.heartRate.set(rs.getInt("result"));     
                 result.date.set(date);
                 result.patientID.set(pid);
             }
+            disconnect(conn);//close the connection to DB
+            
         } catch(SQLException e){
             System.out.println("SQLException happens in getResult() of class Result");  
             return null;//error
