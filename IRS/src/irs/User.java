@@ -25,8 +25,8 @@ public class User extends Data{
                             //NM(nurse manager),
                             //ND(nurse director),DR(GP or specialist)
     
-    public User(){
-    }
+    public User(){        
+    }    
     
     public User(String name, String key, String id, String position){
         this.username = name;
@@ -105,7 +105,7 @@ public class User extends Data{
             return msg;
         }      
         
-        return msg;
+        return msg;//if return "", means valid for all check 
     }
     
     //check if user name is database and password is matched;
@@ -131,7 +131,33 @@ public class User extends Data{
             System.out.println(e.getMessage()); 
             return false;//error              
         }        
-    }  
+    } 
+    
+    //return user according to login information
+    public User getUser(User user){
+        //connect to database, return user in table login
+        try{           
+            Connection conn = connect();//connect() from Data.java
+            PreparedStatement pst = conn.prepareStatement("Select * from login"
+                    + " where username = ? and password = ?");
+            pst.setString(1, user.getName()); 
+            pst.setString(2, user.getKey());
+            ResultSet rs = pst.executeQuery();           
+            
+            if(rs.next()){
+                user.setID(rs.getString("staffID"));
+                user.setPosition(rs.getString("position"));
+                disconnect(conn);//close the connection to DB
+                return user;//true means matched and return data from above retrivement
+            }
+            disconnect(conn);//close the connection to DB
+            return user; 
+          
+        } catch(SQLException e){
+            System.out.println(e.getMessage()); 
+            return user;//error              
+        }     
+    }
 
     //check if user name is database;
     public boolean userCheck(String name){
@@ -196,7 +222,8 @@ public class User extends Data{
             if(i != 0) return true;//return 1. 1 row operation is done.
             return false;//return 0; no action is taken.
         } catch(SQLException e){
-              return false;//error
+            System.out.println(e.toString());
+            return false;//error
         }        
     }
 }

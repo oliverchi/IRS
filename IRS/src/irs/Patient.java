@@ -11,6 +11,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
+import javafx.scene.control.Alert;
 
 /**
  *
@@ -155,55 +157,104 @@ public class Patient extends Data{
     
     //check if patient ID is database;
     public boolean patientIDCheck(String pid){
+        if (!pid.matches("\\d\\d\\d\\d\\d")) return false;//if not five digits, then input error
+
         //connect to database, search if name occurs in table patient
         try{           
             Connection conn = connect();//connect() from Data.java
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM patient "
-                    + "WHERE id = " + pid);  
+            String sql = "SELECT * FROM patient WHERE id = " + "'"+pid+"'";
+            ResultSet rs = stmt.executeQuery(sql);
             if(rs.next()){
                 disconnect(conn);//close the connection to DB
-                return true;//true means matched and have data from above retrivement
+                return false;//true means matched and have data from above retrivement
             }
             disconnect(conn);//close the connection to DB
-            return false; 
+            return true; 
             
         } catch(SQLException e){
-              return false;//error
+            System.out.println("error in patient id check");
+            System.out.println(e.toString());
+            return false;//error
         } 
+    }
+    
+    
+    //check if a valid date
+    public boolean checkBirthdayValid(String birthday) {
+        if(!birthday.matches("\\d\\d\\d\\d-\\d+-\\d+")) return false;//check date format        
+        if (LocalDate.parse(birthday).getYear() >= (LocalDate.now().getYear() - 150) &&
+                LocalDate.parse(birthday).getYear() <= (LocalDate.now().getYear() - 1)){
+            return true;//not valid date
+        } else {
+            return false;//valid date        
+        }
+    }
+    
+    //check if mobile number is 10 digitals
+    public boolean checkPhoneValid(String phone) {
+        if (phone.matches("\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    //check if address string contains number
+    public boolean checkAddressValid(String street) {
+        if (street.matches(".*\\d+.*")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    //check if city string doesn't contain number
+    public boolean checkCityValid(String city) {
+        if (!city.matches(".*\\d+.*")) {
+            return true;
+        } else {
+            return false;
+        }
+    }    
+    
+    //check if postcode string is 4 digitals
+    public boolean checkPostcodeValid(String postcode) {
+        if (postcode.matches("\\d\\d\\d\\d")) {
+            return true;
+        } else {
+            return false;
+        }
     }
     
     //before store data, should check duplicated data first;
     //store new patient information into DB;
     //return boolean value indicates the action successful or not
-    public boolean insertNewPatient(String pid, String fn, String ln, 
-            String gender,String birth, String phone, String street, 
-            String city, String state, String pcode){
-        
-        if ( patientIDCheck(id)) return false;//the same patient ID exist
-
+    public boolean insertNewPatient(Patient p){
         //connect to database, do update
         try{           
             Connection conn = connect();//connect() from Data.java
             PreparedStatement pst = conn.prepareStatement("INSERT INTO patient "
                     + "(id, firstName, lastName, gender, dob, phone, street, "
                     + "city, state, postcode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            pst.setString(1, pid); 
-            pst.setString(2, fn);
-            pst.setString(3, ln);
-            pst.setString(4, gender);
-            pst.setString(5, birth); 
-            pst.setString(6, phone);
-            pst.setString(7, street);
-            pst.setString(8, city);
-            pst.setString(9, state); 
-            pst.setString(10, pcode);            
+            pst.setString(1, p.getID()); 
+            pst.setString(2, p.getFirstName());
+            pst.setString(3, p.getLastName());
+            pst.setString(4, p.getGender());
+            pst.setString(5, p.getDOB().toString()); //System.out.println(p.getDOB().toString());
+            pst.setString(6, p.getPhone());
+            pst.setString(7, p.getStreet());
+            pst.setString(8, p.getCity());
+            pst.setString(9, p.getState()); 
+            pst.setString(10, p.getPostcode());            
             pst.executeUpdate();
             
             disconnect(conn);//close the connection to DB
             
         } catch(SQLException e){
-              return false;//error
+            System.out.println("error in insert new patient");
+            System.out.println(e.toString());
+            return false;//error
         }   
         
         return true;
@@ -213,18 +264,16 @@ public class Patient extends Data{
     //check patient ID if exist first before do deletation
     //delete one patient 
     public boolean deletePatient( String pid){
-        //patient ID check
-        if ( !patientIDCheck(id)) return false;//this patient ID does't exist
-
         //connect to database, do update
         try{           
             Connection conn = connect();//connect() from Data.java        
             Statement stmt = conn.createStatement();
-            String sql = "DELETE FROM Registration WHERE id =" + pid;
+            String sql = "DELETE FROM patient WHERE id =" + "'"+pid+"'";
             stmt.executeUpdate(sql);
             disconnect(conn);//close the connection to DB
         } catch(SQLException e){
-              return false;//error
+            System.out.println(e.toString());
+            return false;//error
         }
         return true;
     }
@@ -266,20 +315,22 @@ public class Patient extends Data{
     
     //search patient through one attribute and its value
     public Patient searchPatient(String attributeName, String value){
-        Patient p = null;       
-
+        Patient p = new Patient();       
+        
         //connect to database, search one patient
         try{           
             Connection conn = connect();//connect() from Data.java        
             PreparedStatement pst = conn.prepareStatement("SELECT * FROM patient "
-                    + "WHERE ? = ?");
-            pst.setString(1, attributeName); 
-            pst.setString(2, value);            
-            ResultSet rs = pst.executeQuery();
-            disconnect(conn);//close the connection to DB
+                    + "WHERE " + attributeName +" = ?", 
+                    ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            System.out.println("SELECT * FROM patient "
+                    + "WHERE " + attributeName +" = ?");            
+            pst.setString(1, value);            
+            ResultSet rs = pst.executeQuery();            
             while (rs.next()) {
-                p.id = rs.getString("id");
-                p.firstName = rs.getString("fistname");
+                rs.first();
+                p.setID(rs.getString("id"));
+                p.firstName = rs.getString("firstname");
                 p.lastName = rs.getString("lastName");
                 p.gender = rs.getString("gender");
                 p.dob = rs.getDate("dob");
@@ -288,11 +339,55 @@ public class Patient extends Data{
                 p.street = rs.getString("street");
                 p.state = rs.getString("state");
                 p.postcode = rs.getString("postcode");
+                disconnect(conn);//close the connection to DB
+                return p;
             }
+            disconnect(conn);//close the connection to DB
+            return null;
         } catch(SQLException e){
+            System.out.println(e.getErrorCode());
+            System.out.println(e.toString());
             System.out.println("SQLException happens in searchPatient() of class Patient");  
             return null;//error
-        }
-        return p;        
+        }               
     }
+    
+    //search patient through one attribute and its value
+    public Patient searchPatient(String attributeName1, String value1, 
+            String attributeName2, String value2){
+        Patient p = new Patient();    
+
+        //connect to database, search one patient
+        try{           
+            Connection conn = connect();//connect() from Data.java        
+            PreparedStatement pst = conn.prepareStatement("SELECT * FROM patient "
+                    + "WHERE " + attributeName1 + " = ? and " 
+                    + attributeName2 + " = ?", ResultSet.TYPE_SCROLL_SENSITIVE, 
+                    ResultSet.CONCUR_READ_ONLY); 
+            pst.setString(1, value1);
+            pst.setString(2, value2);
+            ResultSet rs = pst.executeQuery();            
+            while (rs.next()) {
+                rs.first();
+                p.setID(rs.getString("id"));
+                p.firstName = rs.getString("firstname");
+                p.lastName = rs.getString("lastName");
+                p.gender = rs.getString("gender");
+                p.dob = rs.getDate("dob");
+                p.phone = rs.getString("phone");
+                p.city = rs.getString("city");
+                p.street = rs.getString("street");
+                p.state = rs.getString("state");
+                p.postcode = rs.getString("postcode");
+                disconnect(conn);//close the connection to DB
+                return p;
+            }
+            disconnect(conn);//close the connection to DB
+            return null;
+        } catch(SQLException e){
+            System.out.println("SQLException happens in searchPatient2() of class Patient");  
+            return null;//error
+        }        
+    }   
+ 
 }

@@ -8,63 +8,22 @@ package irs;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-//import java.sql.Statement;
+import java.sql.Statement;
 
 /**
  *
  * @author Oliver
  */
-public class Data {
+public class BuildDatabase {
     private static final String DRIVER = "org.apache.derby.jdbc.EmbeddedDriver";
     private static final String PROTOCOL = "jdbc:derby:";
     private static final String DBNAME = "IRS_Data";
-    //private Connection conn;
+    private Connection conn;
     
-    public Data(){
+    public BuildDatabase(){
     
     }
-    
-    //build connection to database
-    public Connection connect(){
-        Connection connect = null;
-        
-        try{
-            Class.forName(DRIVER).newInstance();
-		//System.out.println("Loaded the embedded driver.");
-        } catch(ClassNotFoundException | IllegalAccessException 
-                | InstantiationException err){
-            System.err.println("Unable to load the embedded driver.");
-			err.printStackTrace(System.err);
-			//System.exit(0);
-        }
-                
-        try {
-            connect = DriverManager.getConnection(PROTOCOL + DBNAME );
-            //System.out.println("connect DB successfully");
-            
-        } catch(SQLException err){
-           System.err.println("database connection error.");
-           err.printStackTrace(System.err);
-           //System.exit(0);
-        }
-        
-        return connect;
-    }
-    
-    //disconnect to database
-    public boolean disconnect(Connection connect){
-        try {
-            connect.close();
-            //System.out.println("disconnect successfully");
-            
-        } catch(SQLException err){
-           System.err.println("disconnect database fails.");
-           err.printStackTrace(System.err);   
-           return false;
-        }
-        return true;
-    }
-    
+       
     /*************************************************************************
      *    codes for create DB and tables and insert test data                *
      *  from OLD PROJECT HeartRateMonitor (Git: oliverchi.heartratemonitor ) *
@@ -78,7 +37,7 @@ public class Data {
      * Method connectDB()
      * @return boolean value if it is successful to connect database
      */
-    /*
+    
     public boolean connectDB(){
                 
         try {
@@ -92,14 +51,14 @@ public class Data {
         }
         return true;        
     }
-    */
+    
           
     
     /**
      * Method closeConnection()
      * This method has to be called after all other methods are completed
      */
-    /*
+    
     public void closeConnection(){
         try {
             this.conn.close();   
@@ -109,14 +68,14 @@ public class Data {
            err.printStackTrace(System.err);           
         }
     }
-    */
+    
     
     /**
      * Method createDB()
      * @return boolean value if it is successful to create database
      * used by createTables() to initial data
      */
-    /*
+    
     public boolean createDB(){
         try{
             Class.forName(DRIVER).newInstance();
@@ -139,14 +98,14 @@ public class Data {
         }
         return true;        
     }
-    */
+    
     
     /**
      * Method executeSQL()
      * @param sql: SQL statement for execution
      * @return boolean value if it is successful to execute SQL statement
      */
-    /*
+    
     public boolean executeSQL(String sql){
         try {
             Statement s = conn.createStatement();
@@ -160,14 +119,14 @@ public class Data {
         }
         return true; 
     }
-    */
+    
     
     /**
      * Method createTables()
      * initial the tables in the IRS database
      * @return boolean
      */
-    /*
+    
     public boolean createTables(){
            
         //create database
@@ -370,7 +329,5 @@ public class Data {
         }
         
         return true;
-    }
-    */
-    
+    }  
 }

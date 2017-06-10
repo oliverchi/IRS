@@ -6,6 +6,9 @@
 package irs;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -34,11 +37,12 @@ public class IRS extends Application {
     
     //initial user object and give instance of class to pass user value to next
     private final static User userAccount = new User();    
-    private final static IRS instanceOfIRS = new IRS();
-    public static IRS getInstance() {
+    private final static IRS instanceOfIRS = new IRS();//give instance of main class
+    public static IRS getInstance() {//return instance of main class
         return instanceOfIRS;
     }
     
+    //start stage
     @Override
     public void start(Stage primaryStage) {
         //window Title
@@ -120,7 +124,7 @@ public class IRS extends Application {
                 Stage loginStage = (Stage) ((Node) e.getSource())
                         .getScene().getWindow();
                 loginStage.setScene(userRegisterScene);
-                loginStage.setX(0);
+                loginStage.setX(0);//set scene position as (0,0)
                 loginStage.setY(0);
                 loginStage.show();
             } catch (IOException ex) {
@@ -145,11 +149,30 @@ public class IRS extends Application {
         new Data().createTables();
         System.out.println("End of process creating DB");
         */
+        if(!databaseIfExisted()){
+            new BuildDatabase().createTables();
+        }
+        
         launch(args);
     }
     
     //retrive user account
     public User getUser(){
-        return this.userAccount;
+        return IRS.userAccount;
+    }
+    
+    //build database when first start
+    private static boolean databaseIfExisted(){
+        String PROTOCOL = "jdbc:derby:";
+        String DBNAME = "IRS_Data";
+        Connection conn;
+        try {
+            conn = DriverManager.getConnection(PROTOCOL + DBNAME );
+            conn.close();            
+        } catch(SQLException e){
+            //e.printStackTrace(System.err);
+            return false;//ok to build new database
+        }
+        return true;
     }
 }
