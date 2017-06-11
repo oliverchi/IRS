@@ -47,7 +47,7 @@
             <Font name="Agency FB" size="16.0" />
          </font>
       </Label>
-      <TextField fx:id="dobField" layoutX="417.0" layoutY="20.0" onKeyReleased="#keyInputOnTextField" prefHeight="32.0" prefWidth="80.0" promptText="1900-00-00">
+      <TextField fx:id="dobField" layoutX="417.0" layoutY="20.0" onKeyReleased="#keyInputOnTextField" prefHeight="32.0" prefWidth="82.0" promptText="1900-00-00">
          <font>
             <Font name="Agency FB" size="16.0" />
          </font>
@@ -133,5 +133,73 @@
             <Font name="Agency FB" size="16.0" />
          </font>
       </Button>
+      <Label layoutX="5.0" layoutY="96.0" text="Display Above Patient's Heart Rate Test Result" textFill="#4f07ebbd">
+         <font>
+            <Font name="Arial Narrow" size="14.0" />
+         </font>
+      </Label>
+      <Label layoutX="36.0" layoutY="120.0" text="Start Date:">
+         <font>
+            <Font name="Agency FB" size="18.0" />
+         </font>
+      </Label>
+      <DatePicker fx:id="startDatePicker" layoutX="100.0" layoutY="114.0" maxHeight="1.7976931348623157E308" prefHeight="32.0" prefWidth="161.0" promptText="2013-01-01" />
+      <DatePicker fx:id="lastDatePicker" layoutX="348.0" layoutY="114.0" maxHeight="1.7976931348623157E308" prefHeight="32.0" prefWidth="161.0" promptText="2013-01-08" />
+      <Label layoutX="288.0" layoutY="118.0" text="Last Date:">
+         <font>
+            <Font name="Agency FB" size="18.0" />
+         </font>
+      </Label>
+      <Button fx:id="displayBtn" layoutX="549.0" layoutY="114.0" mnemonicParsing="false" onAction="#displayBtnOnAction" text="Display Heart Rate">
+         <font>
+            <Font name="Agency FB" size="16.0" />
+         </font>
+      </Button>
+      <Button fx:id="changeRecordsBtn" layoutX="456.0" layoutY="358.0" mnemonicParsing="false" onAction="#changeRecordsBtnOnAction" text="Change Records">
+         <font>
+            <Font name="Agency FB" size="16.0" />
+         </font>
+      </Button>
+      <Button fx:id="recommendBtn" layoutX="614.0" layoutY="288.0" mnemonicParsing="false" onAction="#recommendBtnOnAction" text="IF NEED TEST TODAY">
+         <font>
+            <Font name="Agency FB" size="16.0" />
+         </font>
+      </Button>
+      <Button fx:id="insertRecordBtn" layoutX="455.0" layoutY="408.0" mnemonicParsing="false" onAction="#insertRecordBtnOnAction" text="Insert New Result">
+         <font>
+            <Font name="Agency FB" size="16.0" />
+         </font>
+      </Button>
+      <Label alignment="CENTER_RIGHT" layoutX="450.0" layoutY="183.0" text="MIN" textAlignment="RIGHT" />
+      <TextField fx:id="minField" layoutX="496.0" layoutY="183.0" prefHeight="39.0" prefWidth="51.0" />
+      <TextField fx:id="maxField" layoutX="604.0" layoutY="183.0" prefHeight="39.0" prefWidth="51.0" />
+      <Label alignment="CENTER_RIGHT" layoutX="560.0" layoutY="183.0" text="MAX" />
+      <Label alignment="CENTER_RIGHT" layoutX="584.0" layoutY="237.0" text="P" />
+      <TextField fx:id="pField" layoutX="604.0" layoutY="236.0" prefHeight="39.0" prefWidth="51.0" />
+      <TextField fx:id="kField" layoutX="496.0" layoutY="236.0" prefHeight="39.0" prefWidth="51.0" />
+      <Label alignment="CENTER_RIGHT" layoutX="477.0" layoutY="237.0" text="K" />
+      <Button fx:id="changeParametersBtn" layoutX="458.0" layoutY="288.0" mnemonicParsing="false" onAction="#changeParametersBtnOnAction" text="Change Parameters">
+         <font>
+            <Font name="Agency FB" size="16.0" />
+         </font>
+      </Button>
+      <Label fx:id="recordMsg" alignment="CENTER" layoutX="2.0" layoutY="150.0" prefHeight="27.0" prefWidth="796.0" text="Target one patient before taking any action on heart rate records." textFill="#e01010e9">
+         <font>
+            <Font name="Arial Narrow" size="18.0" />
+         </font>
+      </Label>
+      <Label fx:id="dateErrorMsg" alignment="CENTER" layoutX="511.0" layoutY="91.0" prefHeight="27.0" prefWidth="287.0" text="                " textFill="#e01010e9">
+         <font>
+            <Font name="Arial Narrow" size="18.0" />
+         </font>
+      </Label>
+      <TableView fx:id="tableView" layoutX="5.0" layoutY="174.0" prefHeight="463.0" prefWidth="431.0" />
+      <Separator layoutX="435.0" layoutY="174.0" prefHeight="3.0" prefWidth="365.0" />
+      <Separator layoutX="437.0" layoutY="342.0" prefHeight="3.0" prefWidth="365.0" />
+      <Label fx:id="recommMsg" alignment="CENTER" layoutX="659.0" layoutY="183.0" prefHeight="91.0" prefWidth="136.0" text="              " textFill="#3010e3db">
+         <font>
+            <Font name="Century Schoolbook Bold" size="14.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>

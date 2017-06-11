@@ -12,7 +12,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
-import javafx.scene.control.Alert;
 
 /**
  *
@@ -156,6 +155,8 @@ public class Patient extends Data{
        
     
     //check if patient ID is database;
+    //return true: patient ID existed
+    //return false: patient ID dis-existed
     public boolean patientIDCheck(String pid){
         if (!pid.matches("\\d\\d\\d\\d\\d")) return false;//if not five digits, then input error
 
@@ -167,10 +168,10 @@ public class Patient extends Data{
             ResultSet rs = stmt.executeQuery(sql);
             if(rs.next()){
                 disconnect(conn);//close the connection to DB
-                return false;//true means matched and have data from above retrivement
+                return true;//true means matched and have data from above retrivement
             }
             disconnect(conn);//close the connection to DB
-            return true; 
+            return false; 
             
         } catch(SQLException e){
             System.out.println("error in patient id check");
@@ -323,8 +324,8 @@ public class Patient extends Data{
             PreparedStatement pst = conn.prepareStatement("SELECT * FROM patient "
                     + "WHERE " + attributeName +" = ?", 
                     ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            System.out.println("SELECT * FROM patient "
-                    + "WHERE " + attributeName +" = ?");            
+            //System.out.println("SELECT * FROM patient "
+            //        + "WHERE " + attributeName +" = ?");//for test      
             pst.setString(1, value);            
             ResultSet rs = pst.executeQuery();            
             while (rs.next()) {

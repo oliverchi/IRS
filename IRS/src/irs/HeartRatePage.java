@@ -14,10 +14,22 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import java.sql.Date;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.Tooltip;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyEvent;
 
 /**
  * FXML Controller class
@@ -30,6 +42,8 @@ import javafx.scene.control.Tooltip;
 public class HeartRatePage extends Patient implements Initializable {
     User user = new User();
     Patient patient = new Patient();
+    Result result = new Result(null,null,0);
+    Map<String, Integer> ratePairs = new HashMap<>(); 
     
     @FXML
     private Button searchBtn;    
@@ -61,6 +75,39 @@ public class HeartRatePage extends Patient implements Initializable {
     private Label patientMsg;
     @FXML
     private Label welcomeMsg;
+    @FXML
+    private DatePicker startDatePicker;
+    @FXML
+    private DatePicker lastDatePicker;
+    @FXML
+    private Button displayBtn;
+    @FXML
+    private Button changeRecordsBtn;
+    @FXML
+    private Button recommendBtn;
+    @FXML
+    private Button insertRecordBtn;
+    @FXML
+    private TextField minField;
+    @FXML
+    private TextField maxField;
+    @FXML
+    private TextField pField;
+    @FXML
+    private TextField kField;
+    @FXML
+    private Button changeParametersBtn;
+    @FXML
+    private Label recordMsg;
+    @FXML
+    private Label dateErrorMsg;
+    @FXML
+    private TableView<Result> tableView;
+    @FXML
+    private Label recommMsg;
+
+    public HeartRatePage() {
+    }
     
     
     
@@ -76,16 +123,13 @@ public class HeartRatePage extends Patient implements Initializable {
         user = user.getUser(user);
         welcomeMsg.setText( "welcome, " + user.getID() );
         
-        setTooltip();//set tooltips 
+        setTooltip();//set tooltips   
+        
+        setTableView();//initialise table
     }   
     
     @FXML
-    void keyInputOnTextField(ActionEvent event){
-        patientMsg.setText("");//reset message
-    }
-    
-    @FXML
-    void searchBtnOnAction(ActionEvent event) { 
+    private void searchBtnOnAction(ActionEvent event) { 
         patientMsg.setText("");//reset message
         //initialise state indicator
         int indicator = 0;//no input
@@ -253,7 +297,7 @@ public class HeartRatePage extends Patient implements Initializable {
             return false;
         }        
         //check ID input
-        if ( !patientIDCheck(pidField.getText())) {//true: ID existed so can't insert
+        if ( patientIDCheck(pidField.getText())) {//true: ID existed so can't insert
             patientMsg.setText("Incorrect patient ID, please try again!");//check if the same patient ID exist
             return false;
         }
@@ -261,7 +305,7 @@ public class HeartRatePage extends Patient implements Initializable {
     }
     
     @FXML
-    void insertBtnOnAction(ActionEvent event) {  
+    private void insertBtnOnAction(ActionEvent event) {  
         patientMsg.setText("");//reset message
         //check valid of input values 
         if (checkIfAllInputsAvailable()){
@@ -287,12 +331,12 @@ public class HeartRatePage extends Patient implements Initializable {
     }
     
     @FXML
-    void deleteBtnOnAction(ActionEvent event) {  
+    private void deleteBtnOnAction(ActionEvent event) {  
         patientMsg.setText("");//reset message
         String pid = pidField.getText();
-        if ( !patientIDCheck(pid)) {//true: ID existed so can delete 
-            if(alertMsg("Are you OK to delete informaiton of this patient")){
-                if (deletePatient(pid) ) {
+        if ( patientIDCheck(pid)) {//true: ID existed so can delete 
+            if(alertMsg("Are you OK to delete informaiton of this patient")){//pop up alert window
+                if (deletePatient(pid) ) {//delete that patient's information from database
                     patientMsg.setText("DELETE PATIENT ID "+ pid +" SUCCESSFULLY!");
                     resetTextField();
                 }else{
@@ -396,5 +440,109 @@ public class HeartRatePage extends Patient implements Initializable {
                 "***as displayed values" 
         );
         insertBtn.setTooltip(tooltip6);
+    }
+
+    @FXML
+    private void keyInputOnTextField(KeyEvent event) {
+        patientMsg.setText("");//reset message
+    }
+    
+    @FXML
+    private void displayBtnOnAction(ActionEvent event) {
+        
+        switch(checkDatesValid()){
+            case "NULL":
+                dateErrorMsg.setText("select the days before clicking button");
+                break;
+            case "ONEDAY":
+                if (patient.getID() == null ){//check patient ID not null
+                    dateErrorMsg.setText("Error: haven't select one patient");
+                    break;
+                }                    
+                if (patientIDCheck(patient.getID())){//if patient exist, do display action
+                    result = result.getResult(patient.getID(),
+                            startDatePicker.getValue().toString());
+                    if (result == null) {
+                        dateErrorMsg.setText("No data in wrong date, please recheck!");
+                    }else{                        
+                        ObservableList<Result> r = 
+                                FXCollections.observableArrayList(
+                                        new Result(result.getPatientID(),
+                                                result.getDate() ,
+                                                result.getHeartRate()));                        
+                        tableView.setItems(r);                        
+                    }
+                } else {
+                    dateErrorMsg.setText("Error: haven't select one patient");
+                }                    
+                break;
+            case "NORMAL":
+                if (patient.getID() == null ){//check patient ID not null
+                    dateErrorMsg.setText("Error: haven't select one patient");
+                    break;
+                }
+                if (patientIDCheck(patient.getID())){//if patient exist, do display action
+                    ratePairs = result.getResults(patient.getID(),
+                            startDatePicker.getValue(), lastDatePicker.getValue());
+                    if (ratePairs == null) {
+                        dateErrorMsg.setText("No data in wrong dates, please recheck!");
+                    }else{
+                        System.out.println(ratePairs.get(startDatePicker.getValue().toString()));//for test
+                        System.out.println(ratePairs.get(lastDatePicker.getValue().toString()));//for test
+                    }
+                } else {
+                    dateErrorMsg.setText("Error: haven't select one patient");
+                }
+                break;
+            case "WRONG":
+                dateErrorMsg.setText("Error: start day is after last day");
+                break;            
+            default:
+                dateErrorMsg.setText("System Error: please try it later");
+                break;
+        }
+    }
+
+    @FXML
+    private void changeRecordsBtnOnAction(ActionEvent event) {
+    }
+
+    @FXML
+    private void recommendBtnOnAction(ActionEvent event) {
+    }
+
+    @FXML
+    private void insertRecordBtnOnAction(ActionEvent event) {
+    }
+
+    @FXML
+    private void changeParametersBtnOnAction(ActionEvent event) {
+    }
+    
+    private String checkDatesValid(){
+        if(startDatePicker.getValue() == null || lastDatePicker.getValue() == null)
+            return "NULL";//lack of input
+        LocalDate startDate = startDatePicker.getValue();
+        LocalDate lastDate = lastDatePicker.getValue();
+        if(startDate.isBefore(lastDate)) return "NORMAL";//correct input
+        if(startDate.isEqual(lastDate)) return "ONEDAY";//start date is last date
+        return "WRONG";//start date is after last date
+    }
+    
+    private void setTableView(){
+        TableColumn idCol = new TableColumn("Patient ID");
+        TableColumn dateCol = new TableColumn("Test Date");
+        TableColumn rateCol = new TableColumn("Heart Rate Reading");
+        rateCol.setMinWidth(140);
+        tableView.getColumns().addAll(idCol, dateCol, rateCol);
+        idCol.setCellValueFactory(
+            new PropertyValueFactory<>("patientID")
+        );
+        dateCol.setCellValueFactory(
+            new PropertyValueFactory<>("date")
+        );
+        rateCol.setCellValueFactory(
+            new PropertyValueFactory<>("heartRate")
+        );
     }
 }
