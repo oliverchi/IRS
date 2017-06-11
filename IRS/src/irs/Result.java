@@ -10,10 +10,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 /**
  *
  * @author Oliver
@@ -162,9 +162,9 @@ public class Result extends Data{
     }*/ 
     
     //get one patient's heart rate records according to given patient ID, start date and end date
-    public Map<String, Integer> getResults(String pid,  LocalDate startDate,
+    public ObservableList<Result> getResults(String pid,  LocalDate startDate,
             LocalDate finishDate){
-        Map<String, Integer> ratePairs = new HashMap<>(); 
+        ObservableList<Result> r = FXCollections.observableArrayList();
                               
         //connect to database, retrive one row of table result
         try{           
@@ -179,7 +179,8 @@ public class Result extends Data{
                 ResultSet rs = pst.executeQuery();
                 
                 while (rs.next()) {                    
-                    ratePairs.put(startDate.toString(), rs.getInt("result"));
+                    r.add(new Result(pid,startDate.toString(),
+                            rs.getInt("result")));//add new Result to List
                 }
                 
                 startDate = startDate.plusDays(1);//increment of date until over last day
@@ -188,7 +189,7 @@ public class Result extends Data{
             }while(!startDate.isAfter(finishDate));//until date is over last day
                         
             disconnect(conn);//close the connection to DB
-            return ratePairs;
+            return r;
         } catch(SQLException e){
             System.out.println("SQLException happens in getResults() of class Result");  
             System.out.println(e.toString());

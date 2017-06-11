@@ -43,7 +43,6 @@ public class HeartRatePage extends Patient implements Initializable {
     User user = new User();
     Patient patient = new Patient();
     Result result = new Result(null,null,0);
-    Map<String, Integer> ratePairs = new HashMap<>(); 
     
     @FXML
     private Button searchBtn;    
@@ -469,8 +468,8 @@ public class HeartRatePage extends Patient implements Initializable {
                                 FXCollections.observableArrayList(
                                         new Result(result.getPatientID(),
                                                 result.getDate() ,
-                                                result.getHeartRate()));                        
-                        tableView.setItems(r);                        
+                                                result.getHeartRate()));//add data for table                        
+                        tableView.setItems(r); //display table                       
                     }
                 } else {
                     dateErrorMsg.setText("Error: haven't select one patient");
@@ -481,14 +480,14 @@ public class HeartRatePage extends Patient implements Initializable {
                     dateErrorMsg.setText("Error: haven't select one patient");
                     break;
                 }
-                if (patientIDCheck(patient.getID())){//if patient exist, do display action
-                    ratePairs = result.getResults(patient.getID(),
-                            startDatePicker.getValue(), lastDatePicker.getValue());
-                    if (ratePairs == null) {
+                if (patientIDCheck(patient.getID())){//if patient exist, do display action                    
+                    ObservableList<Result> rList = result.getResults(//call getResults(string,LocalDate,LocalDate)
+                            patient.getID(),startDatePicker.getValue(), 
+                            lastDatePicker.getValue());//get days's heart rate from database
+                    if (rList == null) {
                         dateErrorMsg.setText("No data in wrong dates, please recheck!");
                     }else{
-                        System.out.println(ratePairs.get(startDatePicker.getValue().toString()));//for test
-                        System.out.println(ratePairs.get(lastDatePicker.getValue().toString()));//for test
+                        tableView.setItems(rList);//display table  
                     }
                 } else {
                     dateErrorMsg.setText("Error: haven't select one patient");
