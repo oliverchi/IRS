@@ -65,17 +65,18 @@ public class Parameters extends Data{
             ResultSet rs = pst.executeQuery();
             
             while (rs.next()) {
-                parameters.min.set(rs.getInt("min"));  
-                parameters.max.set(rs.getInt("max"));  
+                parameters.min.set(rs.getInt("minrate"));  
+                parameters.max.set(rs.getInt("maxrate"));  
                 parameters.k.set(rs.getInt("k"));  
                 parameters.p.set(rs.getInt("p")); 
             }
             disconnect(conn);//close the connection to DB
             return parameters;
         } catch(SQLException e){
-            System.out.println("SQLException happens in getParameters() of class Parameters");  
+            System.out.println("SQLException happens in getParameters() of class Parameters");
+            System.out.println(e.toString());
+            return null;
         }
-        return parameters;
     }
     
     //insert parameter into database
@@ -101,5 +102,25 @@ public class Parameters extends Data{
         }        
     }
     
-    
+    //insert parameter into database
+    public boolean changeParameters(Parameters parameters){
+        //connect to database, retrive one row of table parameters
+        try{           
+            Connection conn = connect();//connect() from Data.java        
+            PreparedStatement pst = conn.prepareStatement("UPDATE parameters "
+                    + " SET minrate = ? , maxrate= ? , k = ? , p = ? WHERE patientID = ?");            
+            pst.setString(1, String.valueOf(parameters.getMIN()) );
+            pst.setString(2, String.valueOf(parameters.getMAX()) );
+            pst.setString(3, String.valueOf(parameters.getK()) );
+            pst.setString(4, String.valueOf(parameters.getP()) );
+            pst.setString(5, parameters.getID()); 
+            int b = pst.executeUpdate();
+            disconnect(conn);//close the connection to DB
+            if (b != 0) return true;
+            return false;
+        } catch(SQLException e){
+            System.out.println("SQLException happens in setParameters() of class Parameters");  
+            return false;//error
+        }        
+    }
 }

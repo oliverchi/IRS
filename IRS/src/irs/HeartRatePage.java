@@ -15,11 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
@@ -42,7 +38,8 @@ import javafx.scene.input.KeyEvent;
 public class HeartRatePage extends Patient implements Initializable {
     User user = new User();
     Patient patient = new Patient();
-    Result result = new Result(null,null,0);
+    Result result = new Result(null,null,0);//default set to avaid NULL POINTER ERROR
+    Parameters para = new Parameters("00000");//default parameters store in a row PRIMARY KEY as '00000'
     
     @FXML
     private Button searchBtn;    
@@ -104,6 +101,12 @@ public class HeartRatePage extends Patient implements Initializable {
     private TableView<Result> tableView;
     @FXML
     private Label recommMsg;
+    @FXML
+    private TextField recordIDField;
+    @FXML
+    private TextField recordDateField;
+    @FXML
+    private TextField recordRateField;
 
     public HeartRatePage() {
     }
@@ -353,16 +356,17 @@ public class HeartRatePage extends Patient implements Initializable {
         alert.setContentText(msg);
         alert.showAndWait();
         
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        Optional<ButtonType> btn = alert.showAndWait();
+        if (btn.isPresent() && btn.get() == ButtonType.OK) {
             return true;
         } 
-        if (result.isPresent() && result.get() == ButtonType.CANCEL) {
+        if (btn.isPresent() && btn.get() == ButtonType.CANCEL) {
             return false;
         } 
         return false;
     }
     
+    //EMPTY PREVIOUS INPUT
     private void resetTextField(){
         pidField.setText("");
         fnField.setText("");
@@ -376,7 +380,7 @@ public class HeartRatePage extends Patient implements Initializable {
         postcodeField.setText("");
     }
     
-    //display one patient one page
+    //DISPLAY ONE PATIENT'S ALL INFORMATION
     public void display(Patient p){
         pidField.setText(p.getID());
         fnField.setText(p.getFirstName());
@@ -387,10 +391,14 @@ public class HeartRatePage extends Patient implements Initializable {
         streetField.setText(p.getStreet());
         stateField.setText(p.getState());
         cityField.setText(p.getCity());
-        postcodeField.setText(p.getPostcode());        
+        postcodeField.setText(p.getPostcode());  
+        setHeartRateParameters(p.getID()); 
+        recommMsg.setText("");
+        dateErrorMsg.setText("");
+        //recordMsg.setText("");        
     }
     
-    //setup all tooltips here
+    //SETUP ALL TOOLTIPS HERE
     void setTooltip(){
         //set tooltip for patient ID Field
         final Tooltip tooltip1 = new Tooltip();
@@ -436,9 +444,49 @@ public class HeartRatePage extends Patient implements Initializable {
         final Tooltip tooltip6 = new Tooltip();
         tooltip6.setText(
             "Insert patient\n" +
-                "***as displayed values" 
+                "*as displayed values*" 
         );
         insertBtn.setTooltip(tooltip6);
+        
+        //set tooltip for DISPLAY Button
+        final Tooltip tooltip7 = new Tooltip();
+        tooltip7.setText(
+            "display patient\n" 
+        );
+        displayBtn.setTooltip(tooltip7);
+        
+        //set tooltip for ChangeRecord Button
+        final Tooltip tooltip8 = new Tooltip();
+        tooltip8.setText(
+            "change record\n" +
+                "*as input value*"
+        );
+        changeRecordsBtn.setTooltip(tooltip8);
+    
+        //set tooltip for reommend Button
+        final Tooltip tooltip9 = new Tooltip();
+        tooltip9.setText(
+            "recommend\n" +
+                "*if test today*"
+        );
+        recommendBtn.setTooltip(tooltip9);
+        
+        //set tooltip for insert record Button
+        final Tooltip tooltip10 = new Tooltip();
+        tooltip10.setText(
+            "insert record\n" +
+                "*as input values*"
+        );
+        insertRecordBtn.setTooltip(tooltip10);
+    
+        //set tooltip for insert record Button
+        final Tooltip tooltip11 = new Tooltip();
+        tooltip11.setText(
+            "change parameters\n" +
+                "*as input values*"
+        );
+        changeParametersBtn.setTooltip(tooltip11);
+    
     }
 
     @FXML
@@ -504,20 +552,84 @@ public class HeartRatePage extends Patient implements Initializable {
 
     @FXML
     private void changeRecordsBtnOnAction(ActionEvent event) {
+        if(recordIDField.getText().isEmpty() 
+                || recordDateField.getText().isEmpty() 
+                || recordRateField.getText().isEmpty()) {
+            recordMsg.setText("Attention!: check all inputs before change a record");
+        }else{
+            if(result.changeResult(new Result(recordIDField.getText(), 
+                    recordDateField.getText(),
+                    Integer.valueOf(recordRateField.getText()) ))){
+                ObservableList<Result> r = FXCollections.observableArrayList(
+                        new Result(recordIDField.getText(),
+                                recordDateField.getText(),
+                                Integer.valueOf(recordRateField.getText()) ));
+                tableView.setItems(r);//display table 
+                recordMsg.setText("CHANGE RECORD SUCCESSFULLY. "
+                        + "SHOW CHANGED RECORD IN TABLE.");
+            }else{
+                recordMsg.setText("DATA ERROR: PLEASE RECHECK YOUR INPUT IF VALID");
+            }
+        } 
     }
 
     @FXML
     private void recommendBtnOnAction(ActionEvent event) {
+        if( recommendTest() && recommMsg.getText().equals("") )
+            recommMsg.setText("SUGGESTION:\nNO NEED TEST TODAY!");
     }
 
     @FXML
     private void insertRecordBtnOnAction(ActionEvent event) {
+        if(recordIDField.getText().isEmpty() 
+                || recordDateField.getText().isEmpty() 
+                || recordRateField.getText().isEmpty()) {
+            recordMsg.setText("Attention!: check all inputs before insert a record");
+        }else{
+            if(result.setResult(new Result(recordIDField.getText(), 
+                    recordDateField.getText(),
+                    Integer.valueOf(recordRateField.getText()) ))){
+                ObservableList<Result> r = FXCollections.observableArrayList(
+                        new Result(recordIDField.getText(),
+                                recordDateField.getText(),
+                                Integer.valueOf(recordRateField.getText()) ));
+                tableView.setItems(r);//display table 
+                recordMsg.setText("INSERT RECORD SUCCESSFULLY. "
+                        + "SHOW NEW RECORD IN TABLE.");
+            }else{
+                recordMsg.setText("DATA ERROR: PLEASE RECHECK YOUR INPUT IF VALID");
+            }
+        }        
     }
 
     @FXML
     private void changeParametersBtnOnAction(ActionEvent event) {
+        if(minField.getText().isEmpty() || pField.getText().isEmpty()
+                || maxField.getText().isEmpty() || kField.getText().isEmpty()) {
+            recordMsg.setText("Attention!: check all inputs before change parameters");
+        }else{
+            if(para.setParameters(new Parameters(patient.getID(),
+                    Integer.valueOf(minField.getText()),                     
+                    Integer.valueOf(maxField.getText()),
+                    Integer.valueOf(kField.getText()),
+                    Integer.valueOf(pField.getText())))){
+                recordMsg.setText("INSERT THIS PATIENT'S PARAMETERS SUCCESSFULLY!");
+                setHeartRateParameters(patient.getID());
+            }else if (para.changeParameters(new Parameters(patient.getID(),
+                    Integer.valueOf(minField.getText()),                     
+                    Integer.valueOf(maxField.getText()),
+                    Integer.valueOf(kField.getText()),
+                    Integer.valueOf(pField.getText())))){
+                recordMsg.setText("CHANGE THIS PATIENT'S PARAMETERS SUCCESSFULLY!");
+                setHeartRateParameters(patient.getID());
+            }else {
+                    recordMsg.setText("DATA ERROR: PLEASE RECHECK PRARMETER INPUTS IF VALID");
+            }
+            
+        } 
     }
     
+    //CHECK IF DATE IS VALID
     private String checkDatesValid(){
         if(startDatePicker.getValue() == null || lastDatePicker.getValue() == null)
             return "NULL";//lack of input
@@ -528,6 +640,7 @@ public class HeartRatePage extends Patient implements Initializable {
         return "WRONG";//start date is after last date
     }
     
+    //DISPLAY TABLE
     private void setTableView(){
         TableColumn idCol = new TableColumn("Patient ID");
         TableColumn dateCol = new TableColumn("Test Date");
@@ -543,5 +656,51 @@ public class HeartRatePage extends Patient implements Initializable {
         rateCol.setCellValueFactory(
             new PropertyValueFactory<>("heartRate")
         );
+    }
+    
+    //GET PARAMETERS FOR PATIENT FROM DATABASE
+    @SuppressWarnings("empty-statement")
+    private void setHeartRateParameters(String pid){
+        para = para.getParameters(pid);
+        minField.setText(String.valueOf(para.getMIN() ) );
+        maxField.setText(String.valueOf(para.getMAX() ) );
+        pField.setText(String.valueOf(para.getP() ) );;
+        kField.setText(String.valueOf(para.getK() ) );;
+    }
+    
+    //CHECK IF NEED TEST TODAY
+    //SET RECOMMEND MESSAGE
+    private boolean recommendTest(){
+        String pid = patient.getID();
+        recommMsg.setText("");
+        if (pid == null ){//check patient ID not null
+            recommMsg.setText("ERROR:\nNO PATIENT SELECTED");
+            return false;
+        }        
+        LocalDate today = LocalDate.now();
+        //para = para.getParameters(pid);//get parameters from database(NO NEED) 
+        long k = (long)(para.getK());
+        if (patientIDCheck(pid)){//if patient exist, do next action                    
+            ObservableList<Result> rList = result.getResults(//call getResults(string,LocalDate,LocalDate)
+                pid,today.minusDays(k), today);//get days's heart rate from database
+            if (rList == null) {
+                recommMsg.setText("NO RESULT EXISTED.\nNEED TEST TODAY!");
+            }else{
+                tableView.setItems(rList);//display results in table                               
+                if (rList.size() < (k*para.getP()/100)){
+                    recommMsg.setText("NOT ENOUGH\nRESULTS EXISTED.\nNEED TEST TODAY!");
+                } else {
+                    rList.forEach(r->{
+                        if (r.getHeartRate() < para.getMIN() 
+                                || r.getHeartRate() > para.getMAX() )
+                            recommMsg.setText("UNSTEADY RESULT EXISTED.\nNEED TEST TODAY!"); 
+                        //CAN'T RETURN FALSE SO NEED recommMsg value CHECK TO DETERMINE IF NEED TEST                       
+                    });                    
+                }
+            }
+        } else {
+            recommMsg.setText("ERROR:\nSELECTED NOT EXISTED.");
+        }
+        return true;    
     }
 }

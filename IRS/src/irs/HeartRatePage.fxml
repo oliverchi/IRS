@@ -155,7 +155,7 @@
             <Font name="Agency FB" size="16.0" />
          </font>
       </Button>
-      <Button fx:id="changeRecordsBtn" layoutX="456.0" layoutY="358.0" mnemonicParsing="false" onAction="#changeRecordsBtnOnAction" text="Change Records">
+      <Button fx:id="changeRecordsBtn" layoutX="614.0" layoutY="365.0" mnemonicParsing="false" onAction="#changeRecordsBtnOnAction" text="Change Records">
          <font>
             <Font name="Agency FB" size="16.0" />
          </font>
@@ -165,19 +165,51 @@
             <Font name="Agency FB" size="16.0" />
          </font>
       </Button>
-      <Button fx:id="insertRecordBtn" layoutX="455.0" layoutY="408.0" mnemonicParsing="false" onAction="#insertRecordBtnOnAction" text="Insert New Result">
+      <Button fx:id="insertRecordBtn" layoutX="614.0" layoutY="409.0" mnemonicParsing="false" onAction="#insertRecordBtnOnAction" text="Insert New Result">
          <font>
             <Font name="Agency FB" size="16.0" />
          </font>
       </Button>
-      <Label alignment="CENTER_RIGHT" layoutX="450.0" layoutY="183.0" text="MIN" textAlignment="RIGHT" />
-      <TextField fx:id="minField" layoutX="496.0" layoutY="183.0" prefHeight="39.0" prefWidth="51.0" />
-      <TextField fx:id="maxField" layoutX="604.0" layoutY="183.0" prefHeight="39.0" prefWidth="51.0" />
-      <Label alignment="CENTER_RIGHT" layoutX="560.0" layoutY="183.0" text="MAX" />
-      <Label alignment="CENTER_RIGHT" layoutX="584.0" layoutY="237.0" text="P" />
-      <TextField fx:id="pField" layoutX="604.0" layoutY="236.0" prefHeight="39.0" prefWidth="51.0" />
-      <TextField fx:id="kField" layoutX="496.0" layoutY="236.0" prefHeight="39.0" prefWidth="51.0" />
-      <Label alignment="CENTER_RIGHT" layoutX="477.0" layoutY="237.0" text="K" />
+      <Label alignment="CENTER_RIGHT" layoutX="445.0" layoutY="192.0" text="MIN" textAlignment="RIGHT">
+      <font>
+            <Font name="Agency FB" size="16.0" />
+         </font>
+      </Label>
+      <TextField fx:id="minField" layoutX="470.0" layoutY="183.0" prefHeight="39.0" prefWidth="51.0">
+      <font>
+            <Font name="Agency FB" size="16.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="maxField" layoutX="557.0" layoutY="183.0" prefHeight="39.0" prefWidth="51.0">
+      <font>
+            <Font name="Agency FB" size="16.0" />
+         </font>
+      </TextField>
+      <Label alignment="CENTER_RIGHT" layoutX="532.0" layoutY="192.0" text="MAX">
+      <font>
+            <Font name="Agency FB" size="16.0" />
+         </font>
+      </Label>
+      <Label alignment="CENTER_RIGHT" layoutX="542.0" layoutY="244.0" text="P">
+      <font>
+            <Font name="Agency FB" size="16.0" />
+         </font>
+      </Label>
+      <TextField fx:id="pField" layoutX="557.0" layoutY="236.0" prefHeight="39.0" prefWidth="51.0">
+      <font>
+            <Font name="Agency FB" size="16.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="kField" layoutX="470.0" layoutY="236.0" prefHeight="39.0" prefWidth="51.0">
+      <font>
+            <Font name="Agency FB" size="16.0" />
+         </font>
+      </TextField>
+      <Label alignment="CENTER_RIGHT" layoutX="456.0" layoutY="244.0" text="K">
+      <font>
+            <Font name="Agency FB" size="16.0" />
+         </font>
+      </Label>
       <Button fx:id="changeParametersBtn" layoutX="458.0" layoutY="288.0" mnemonicParsing="false" onAction="#changeParametersBtnOnAction" text="Change Parameters">
          <font>
             <Font name="Agency FB" size="16.0" />
@@ -196,10 +228,41 @@
       <TableView fx:id="tableView" layoutX="5.0" layoutY="174.0" prefHeight="463.0" prefWidth="431.0" />
       <Separator layoutX="435.0" layoutY="174.0" prefHeight="3.0" prefWidth="365.0" />
       <Separator layoutX="437.0" layoutY="342.0" prefHeight="3.0" prefWidth="365.0" />
-      <Label fx:id="recommMsg" alignment="CENTER" layoutX="659.0" layoutY="183.0" prefHeight="91.0" prefWidth="136.0" text="              " textFill="#3010e3db">
+      <Label fx:id="recommMsg" alignment="CENTER" layoutX="608.0" layoutY="183.0" prefHeight="91.0" prefWidth="187.0" text="              " textFill="#3010e3db">
          <font>
-            <Font name="Century Schoolbook Bold" size="14.0" />
+            <Font name="Century Schoolbook Bold" size="12.0" />
          </font>
       </Label>
+      <TextField fx:id="recordIDField" layoutX="502.0" layoutY="351.0" onKeyReleased="#keyInputOnTextField" prefHeight="32.0" prefWidth="80.0" promptText="00000">
+         <font>
+            <Font name="Agency FB" size="16.0" />
+         </font>
+      </TextField>
+      <Label layoutX="443.0" layoutY="356.0" text="Patient ID">
+         <font>
+            <Font name="Agency FB" size="16.0" />
+         </font>
+      </Label>
+      <Label layoutX="443.0" layoutY="393.0" text="Test Date">
+         <font>
+            <Font name="Agency FB" size="16.0" />
+         </font>
+      </Label>
+      <TextField fx:id="recordDateField" layoutX="502.0" layoutY="388.0" onKeyReleased="#keyInputOnTextField" prefHeight="32.0" prefWidth="80.0" promptText="2013-01-01">
+         <font>
+            <Font name="Agency FB" size="16.0" />
+         </font>
+      </TextField>
+      <Label layoutX="443.0" layoutY="429.0" text="Heart Rate">
+         <font>
+            <Font name="Agency FB" size="16.0" />
+         </font>
+      </Label>
+      <TextField fx:id="recordRateField" layoutX="502.0" layoutY="424.0" onKeyReleased="#keyInputOnTextField" prefHeight="32.0" prefWidth="80.0" promptText="100">
+         <font>
+            <Font name="Agency FB" size="16.0" />
+         </font>
+      </TextField>
+      <Separator layoutX="436.0" layoutY="467.0" prefHeight="3.0" prefWidth="365.0" />
    </children>
 </AnchorPane>
